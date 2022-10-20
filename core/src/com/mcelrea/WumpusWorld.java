@@ -3,6 +3,9 @@ package com.mcelrea;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
+import java.awt.*;
+import java.util.ArrayList;
+
 public class WumpusWorld {
     private int world[][] = {
             {0,0,0,0,0,0,0,0,0,0},
@@ -41,6 +44,11 @@ public class WumpusWorld {
         tileWidth = blackTile.getWidth();
     }
 
+    public void makeVisible(Location loc) {
+        if(isValid(loc))
+            visible[loc.getRow()][loc.getCol()] = true;
+    }
+
     public Location convertCoordsToRowCol(int x, int y) {
         int row;//y
         int col;//x
@@ -54,36 +62,72 @@ public class WumpusWorld {
         return new Location(row,col);
     }
 
+    public Point convertRowColToCoords(Location loc) {
+        int x = (loc.getCol()*50)+xoffset;
+        int y = 600-(loc.getRow()*50)-(600-yoffset);
+        return new Point(x,y);
+    }
+
     public boolean isValid(Location loc) {
         return loc.getRow() >=0 && loc.getRow() < world.length &&
                 loc.getCol() >= 0 && loc.getCol() < world[0].length;
     }
 
-    public void placeTile(int tileId, Location loc) {
-        if(isValid(loc))
+    private void addHints(ArrayList<Location> locs, int tileId) {
+        for(Location loc: locs) {
             world[loc.getRow()][loc.getCol()] = tileId;
+        }
     }
 
-    public void draw(SpriteBatch spriteBatch) {
+    public ArrayList<Location> getNeighbors(Location loc) {
+        Location above = new Location(loc.getRow()-1, loc.getCol());
+        Location below = new Location(loc.getRow()+1, loc.getCol());
+        Location right = new Location(loc.getRow(), loc.getCol()+1);
+        Location left = new Location(loc.getRow(), loc.getCol()-1);
+
+        ArrayList<Location> locs = new ArrayList<>();
+        if(isValid(above))
+            locs.add(above);
+        if(isValid(below))
+            locs.add(below);
+        if(isValid(right))
+            locs.add(right);
+        if(isValid(left))
+            locs.add(left);
+
+        return locs;
+    }
+
+    public void placeTile(int tileId, Location loc) {
+        if(isValid(loc)) {
+            world[loc.getRow()][loc.getCol()] = tileId;
+            if(tileId == GROUND)
+                addHints(getNeighbors(loc), GROUND);
+            else
+                addHints(getNeighbors(loc), tileId+10);
+        }
+    }
+
+    public void draw(SpriteBatch spriteBatch, boolean showHidden) {
         for(int row=0; row < world.length; row++) {
             for(int col=0; col < world[row].length; col++) {
-                if(world[row][col] == GROUND)
+                if(world[row][col] == GROUND && (visible[row][col] || showHidden))
                     spriteBatch.draw(groundTile, xoffset+col*tileWidth, yoffset-row*tileWidth);
-                else if(world[row][col] == SPIDER)
+                else if(world[row][col] == SPIDER && (visible[row][col] || showHidden))
                     spriteBatch.draw(spiderTile, xoffset+col*tileWidth, yoffset-row*tileWidth);
-                else if(world[row][col] == WUMPUS)
+                else if(world[row][col] == WUMPUS && (visible[row][col] || showHidden))
                     spriteBatch.draw(wumpusTile, xoffset+col*tileWidth, yoffset-row*tileWidth);
-                else if(world[row][col] == PIT)
+                else if(world[row][col] == PIT && (visible[row][col] || showHidden))
                     spriteBatch.draw(pitTile, xoffset+col*tileWidth, yoffset-row*tileWidth);
-                else if(world[row][col] == WIND)
+                else if(world[row][col] == WIND && (visible[row][col] || showHidden))
                     spriteBatch.draw(windTile, xoffset+col*tileWidth, yoffset-row*tileWidth);
-                else if(world[row][col] == STINK)
+                else if(world[row][col] == STINK && (visible[row][col] || showHidden))
                     spriteBatch.draw(stinkTile, xoffset+col*tileWidth, yoffset-row*tileWidth);
-                else if(world[row][col] == GLITTER)
+                else if(world[row][col] == GLITTER && (visible[row][col] || showHidden))
                     spriteBatch.draw(glitterTile, xoffset+col*tileWidth, yoffset-row*tileWidth);
-                else if(world[row][col] == GOLD)
+                else if(world[row][col] == GOLD && (visible[row][col] || showHidden))
                     spriteBatch.draw(goldTile, xoffset+col*tileWidth, yoffset-row*tileWidth);
-                else if(world[row][col] == WEB)
+                else if(world[row][col] == WEB && (visible[row][col] || showHidden))
                     spriteBatch.draw(webTile, xoffset+col*tileWidth, yoffset-row*tileWidth);
             }//end inner for
         }//end outer for
