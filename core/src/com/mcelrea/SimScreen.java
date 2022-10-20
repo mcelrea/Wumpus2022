@@ -23,7 +23,7 @@ public class SimScreen implements Screen {
     //Object that allows us to draw all our graphics
     private SpriteBatch spriteBatch;
 
-    //Object that allwos us to draw shapes
+    //Object that allows us to draw shapes
     private ShapeRenderer shapeRenderer;
 
     //Camera to view our virtual world
@@ -69,6 +69,7 @@ public class SimScreen implements Screen {
 
         //user input
         handleMouseClick();
+        handleKeyPresses();
 
         //ai or game updates
 
@@ -90,6 +91,21 @@ public class SimScreen implements Screen {
         p.x = x;
         p.y = 600 - y;
         return p;
+    }
+
+    public void handleKeyPresses() {
+        if(Gdx.input.isKeyJustPressed(Input.Keys.D)) {
+            dude.moveRight();
+        }
+        else if(Gdx.input.isKeyJustPressed(Input.Keys.A)) {
+            dude.moveLeft();
+        }
+        else if(Gdx.input.isKeyJustPressed(Input.Keys.W)) {
+            dude.moveUp();
+        }
+        else if(Gdx.input.isKeyJustPressed(Input.Keys.S)) {
+            dude.moveDown();
+        }
     }
 
     public void handleMouseClick() {

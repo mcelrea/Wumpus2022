@@ -108,6 +108,14 @@ public class WumpusWorld {
         }
     }
 
+    public int getNumRows() {
+        return world.length;
+    }
+
+    public int getNumCols() {
+        return world[0].length;
+    }
+
     public void draw(SpriteBatch spriteBatch, boolean showHidden) {
         for(int row=0; row < world.length; row++) {
             for(int col=0; col < world[row].length; col++) {

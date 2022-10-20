@@ -17,6 +17,35 @@ public class Dude {
         myWorld.makeVisible(loc);
     }
 
+    public void moveRight() {
+        if(loc.getCol()+1 < myWorld.getNumCols()) {
+            loc.setCol(loc.getCol() + 1);
+            myWorld.makeVisible(loc);
+        }
+    }
+
+    public void moveLeft() {
+        if(loc.getCol()-1 >= 0) {
+            loc.setCol(loc.getCol() - 1);
+            myWorld.makeVisible(loc);
+        }
+    }
+
+    public void moveUp() {
+        if(loc.getRow() - 1 >= 0) {
+            loc.setRow(loc.getRow()-1);
+            myWorld.makeVisible(loc);
+        }
+    }
+
+    public void moveDown() {
+        if(loc.getRow() + 1 < myWorld.getNumRows()) {
+            loc.setRow(loc.getRow()+1);
+            myWorld.makeVisible(loc);
+        }
+    }
+
+
     public void draw(SpriteBatch spriteBatch) {
         Point myPoint = myWorld.convertRowColToCoords(loc);
         spriteBatch.draw(texture,(int)myPoint.getX(),(int)myPoint.getY());
