@@ -26,9 +26,11 @@ public class WumpusWorld {
     private final int tileWidth;
 
     private Texture groundTile,spiderTile,pitTile,wumpusTile,goldTile,
-                    webTile,windTile,glitterTile,stinkTile,blackTile;
+                    webTile,windTile,glitterTile,stinkTile,blackTile,
+                    emptyGoldTile;
     public static final int GROUND = 0, SPIDER = 1, PIT = 2, WUMPUS = 3, GOLD = 4,
-                                        WEB = 11, WIND = 12, STINK = 13, GLITTER = 14;
+                                        WEB = 11, WIND = 12, STINK = 13, GLITTER = 14,
+                                        EMPTYCHEST = 24;
 
     public WumpusWorld() {
         groundTile = new Texture("groundTile.png");
@@ -41,6 +43,7 @@ public class WumpusWorld {
         glitterTile = new Texture("glitterTile.png");
         stinkTile = new Texture("stinkTile.png");
         blackTile = new Texture("blackTile.png");
+        emptyGoldTile = new Texture("emptyChest.png");
         tileWidth = blackTile.getWidth();
     }
 
@@ -79,6 +82,33 @@ public class WumpusWorld {
         }
     }
 
+    public void reset() {
+        for(int i=0; i < world.length; i++) {
+            for (int j = 0; j < world[i].length; j++) {
+                world[i][j] = 0;
+                visible[i][j] = false;
+            }
+        }
+    }
+
+    public void removeGold(Location loc) {
+        if(isValid(loc) && world[loc.getRow()][loc.getCol()] == GOLD) {
+            ArrayList<Location> n = getNeighbors(loc);
+            world[loc.getRow()][loc.getCol()] = EMPTYCHEST;
+            for(Location temp: n) {
+                world[temp.getRow()][temp.getCol()] = GROUND;
+            }
+        }
+    }
+
+    public int getTileId(Location loc) {
+        if(isValid(loc))
+            return world[loc.getRow()][loc.getCol()];
+
+        return -1; //if given loc is not valid
+    }
+
+    //returns all the valid neighbors around a Location
     public ArrayList<Location> getNeighbors(Location loc) {
         Location above = new Location(loc.getRow()-1, loc.getCol());
         Location below = new Location(loc.getRow()+1, loc.getCol());
@@ -137,6 +167,8 @@ public class WumpusWorld {
                     spriteBatch.draw(goldTile, xoffset+col*tileWidth, yoffset-row*tileWidth);
                 else if(world[row][col] == WEB && (visible[row][col] || showHidden))
                     spriteBatch.draw(webTile, xoffset+col*tileWidth, yoffset-row*tileWidth);
+                else if(world[row][col] == EMPTYCHEST && (visible[row][col] || showHidden))
+                    spriteBatch.draw(emptyGoldTile, xoffset+col*tileWidth, yoffset-row*tileWidth);
             }//end inner for
         }//end outer for
     }//end method draw
